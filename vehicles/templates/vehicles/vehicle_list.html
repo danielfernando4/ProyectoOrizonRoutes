@@ -1,0 +1,37 @@
+{% extends 'base.html' %}
+
+{% block title %}Mis Vehículos — Orizon Routes{% endblock %}
+
+{% block content %}
+<h1>Mis Vehículos</h1>
+
+<a href="{% url 'vehicles:create' %}" class="btn">Registrar nuevo vehículo</a>
+
+{% if vehicles %}
+<table>
+    <thead>
+        <tr>
+            <th>Marca</th>
+            <th>Modelo</th>
+            <th>Capacidad</th>
+            <th>Acciones</th>
+        </tr>
+    </thead>
+    <tbody>
+        {% for vehicle in vehicles %}
+        <tr>
+            <td>{{ vehicle.brand }}</td>
+            <td>{{ vehicle.model }}</td>
+            <td>{{ vehicle.capacity }}</td>
+            <td class="actions-cell">
+                <a href="{% url 'vehicles:edit' vehicle.pk %}" class="btn btn-sm btn-secondary">Editar</a>
+                <a href="{% url 'vehicles:delete' vehicle.pk %}" class="btn btn-sm btn-danger">Eliminar</a>
+            </td>
+        </tr>
+        {% endfor %}
+    </tbody>
+</table>
+{% else %}
+<p>No tienes vehículos registrados.</p>
+{% endif %}
+{% endblock %}

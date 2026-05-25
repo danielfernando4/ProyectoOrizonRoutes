@@ -1,0 +1,102 @@
+{% extends 'base.html' %}
+{% load trip_filters %}
+
+{% block title %}Buscar Viajes — Orizon Routes{% endblock %}
+
+{% block content %}
+<h1>Viajes Disponibles</h1>
+
+<datalist id="origin-list">
+    {% for city in CIUDADES_LIST %}
+    <option value="{{ city }}">
+    {% endfor %}
+</datalist>
+<datalist id="dest-list">
+    {% for city in CIUDADES_LIST %}
+    <option value="{{ city }}">
+    {% endfor %}
+</datalist>
+
+<form method="get" class="search-form">
+    <div class="search-fields">
+        <div class="search-field">
+            <label for="id_origin">Origen</label>
+            {{ form.origin }}
+        </div>
+        <div class="search-field">
+            <label for="id_destination">Destino</label>
+            {{ form.destination }}
+        </div>
+        <div class="search-field">
+            <label for="id_ordering">Ordenar</label>
+            {{ form.ordering }}
+        </div>
+    </div>
+    <button type="submit" class="btn btn-primary mt-2">Filtrar</button>
+    {% if has_filters %}
+    <a href="{% url 'trips:search' %}" class="btn btn-secondary mt-2">Limpiar filtros</a>
+    {% endif %}
+</form>
+
+{% if trips %}
+<p class="results-info mt-2">
+    {{ total_results }} viaje(s)
+    {% if origin_filter %}desde <strong>{{ origin_filter }}</strong>{% endif %}
+    {% if destination_filter %}hacia <strong>{{ destination_filter }}</strong>{% endif %}
+    · ordenados por
+    {% if current_ordering == 'price_per_seat' %}precio (menor a mayor)
+    {% elif current_ordering == '-price_per_seat' %}precio (mayor a menor)
+    {% elif current_ordering == 'distance_km' %}distancia
+    {% elif current_ordering == 'departure_datetime' %}fecha más próxima
+    {% else %}fecha más reciente{% endif %}
+</p>
+
+<div class="trip-grid">
+    {% for trip in trips %}
+    <a href="{% url 'trips:detail' trip.pk %}" class="trip-card-link">
+        <div class="trip-card-item">
+            <div class="trip-card-header">
+                <span class="trip-route">{{ trip.origin }} → {{ trip.destination }}</span>
+                <span class="trip-price">${{ trip.price_per_seat }}</span>
+            </div>
+            <div class="trip-card-body">
+                <div class="trip-card-info">
+                    <span class="trip-info-item">📅 {{ trip.departure_datetime|date:"d/m/Y H:i" }}</span>
+                    <span class="trip-info-item">⏱ {{ trip.duration_minutes }} min</span>
+                    <span class="trip-info-item">📍 {{ trip.distance_km }} km</span>
+                </div>
+                <div class="trip-card-meta">
+                    <span class="trip-seats">{{ trip.available_seats }} de {{ trip.vehicle.capacity }} asientos libres</span>
+                    <span class="trip-driver">{{ trip.driver.get_full_name|default:trip.driver.username }}</span>
+                </div>
+            </div>
+        </div>
+    </a>
+    {% endfor %}
+</div>
+
+{% if page_obj.has_other_pages %}
+<nav class="pagination" aria-label="Paginación">
+    {% if page_obj.has_previous %}
+        <a href="?{% for key, values in request.GET.lists %}{% if key != 'page' %}{% for v in values %}{{ key }}={{ v }}&{% endfor %}{% endif %}{% endfor %}page={{ page_obj.previous_page_number }}" class="page-link">&laquo;</a>
+    {% endif %}
+
+    {% for num in page_obj.paginator.page_range %}
+        {% if num >= page_obj.number|add:-2 and num <= page_obj.number|add:2 %}
+            <a href="?{% for key, values in request.GET.lists %}{% if key != 'page' %}{% for v in values %}{{ key }}={{ v }}&{% endfor %}{% endif %}{% endfor %}page={{ num }}"
+               class="page-link {% if num == page_obj.number %}active{% endif %}">{{ num }}</a>
+        {% endif %}
+    {% endfor %}
+
+    {% if page_obj.has_next %}
+        <a href="?{% for key, values in request.GET.lists %}{% if key != 'page' %}{% for v in values %}{{ key }}={{ v }}&{% endfor %}{% endif %}{% endfor %}page={{ page_obj.next_page_number }}" class="page-link">&raquo;</a>
+    {% endif %}
+</nav>
+{% endif %}
+
+{% elif has_filters %}
+<p class="empty-state">No se encontraron viajes con estos filtros.</p>
+{% else %}
+<p class="empty-state">No hay viajes disponibles en este momento. ¡Vuelve pronto!</p>
+{% endif %}
+{% endblock %}

@@ -1,0 +1,16 @@
+{% extends 'base.html' %}
+
+{% block title %}Cancelar Viaje — Orizon Routes{% endblock %}
+
+{% block content %}
+<h1>Cancelar Viaje</h1>
+
+<p>¿Estás seguro de cancelar el viaje "{{ trip.origin }} → {{ trip.destination }}" del {{ trip.departure_datetime|date:"d/m/Y H:i" }}?</p>
+<p>Se reembolsará a todos los pasajeros que hayan pagado.</p>
+
+<form method="post">
+    {% csrf_token %}
+    <button type="submit" class="btn btn-danger">Sí, cancelar y reembolsar</button>
+    <a href="{% url 'trips:list' %}" class="btn">Volver</a>
+</form>
+{% endblock %}

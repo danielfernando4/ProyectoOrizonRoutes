@@ -1,0 +1,27 @@
+{% extends 'base.html' %}
+
+{% block title %}
+    {% if form.instance.pk %}Editar Viaje{% else %}Publicar Viaje{% endif %} — Orizon Routes
+{% endblock %}
+
+{% block content %}
+<h1>{% if form.instance.pk %}Editar Viaje{% else %}Publicar Nuevo Viaje{% endif %}</h1>
+
+<datalist id="origin-list">
+    {% for city in CIUDADES_LIST %}
+    <option value="{{ city }}">
+    {% endfor %}
+</datalist>
+<datalist id="dest-list">
+    {% for city in CIUDADES_LIST %}
+    <option value="{{ city }}">
+    {% endfor %}
+</datalist>
+
+<form method="post">
+    {% csrf_token %}
+    {{ form.as_p }}
+    <button type="submit" class="btn">Guardar</button>
+    <a href="{% url 'trips:list' %}" class="btn">Cancelar</a>
+</form>
+{% endblock %}

@@ -1,0 +1,60 @@
+{% extends 'base.html' %}
+
+{% block title %}Mis Reservas — Orizon Routes{% endblock %}
+
+{% block content %}
+<h1>Mis Viajes Comprados</h1>
+
+{% if reservations %}
+<div class="trip-grid">
+    {% for res in reservations %}
+    <a href="{% url 'trips:detail' res.trip.pk %}" class="trip-card-link">
+        <div class="trip-card-item">
+            <div class="trip-card-header">
+                <span class="trip-route">{{ res.trip.origin }} → {{ res.trip.destination }}</span>
+                <span class="trip-price">${{ res.trip.price_per_seat }}</span>
+            </div>
+            <div class="trip-card-body">
+                <div class="trip-card-info">
+                    <span class="trip-info-item">📅 {{ res.trip.departure_datetime|date:"d/m/Y H:i" }}</span>
+                    <span class="trip-info-item">🎫 {{ res.quantity }} asiento(s)</span>
+                    <span class="trip-info-item">🏷 {{ res.reservation_code }}</span>
+                </div>
+                <div class="trip-card-meta">
+                    <span class="trip-driver">Conductor: {{ res.trip.driver.get_full_name|default:res.trip.driver.username }}</span>
+                    <span class="trip-seats">
+                        {% if res.trip.has_departed %}
+                            Finalizado
+                        {% else %}
+                            Próximo
+                        {% endif %}
+                    </span>
+                </div>
+            </div>
+        </div>
+    </a>
+    {% endfor %}
+</div>
+
+{% if page_obj.has_other_pages %}
+<nav class="pagination" aria-label="Paginación">
+    {% if page_obj.has_previous %}
+        <a href="?page={{ page_obj.previous_page_number }}" class="page-link">&laquo;</a>
+    {% endif %}
+    {% for num in page_obj.paginator.page_range %}
+        {% if num >= page_obj.number|add:-2 and num <= page_obj.number|add:2 %}
+            <a href="?page={{ num }}"
+               class="page-link {% if num == page_obj.number %}active{% endif %}">{{ num }}</a>
+        {% endif %}
+    {% endfor %}
+    {% if page_obj.has_next %}
+        <a href="?page={{ page_obj.next_page_number }}" class="page-link">&raquo;</a>
+    {% endif %}
+</nav>
+{% endif %}
+
+{% else %}
+<p class="empty-state">Aún no has comprado ningún viaje.</p>
+<a href="{% url 'trips:search' %}" class="btn btn-primary">Buscar viajes</a>
+{% endif %}
+{% endblock %}
