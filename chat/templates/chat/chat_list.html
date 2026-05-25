@@ -1,0 +1,23 @@
+{% extends 'base.html' %}
+
+{% block title %}Mis Chats — Orizon Routes{% endblock %}
+
+{% block content %}
+<h1>Mis Chats</h1>
+
+{% if chat_rooms %}
+<ul class="chat-list">
+    {% for room in chat_rooms %}
+    <li>
+        <a href="{% url 'chat:room' room.pk %}">
+            <strong>{{ room.trip.origin }} → {{ room.trip.destination }}</strong>
+            <br>
+            <small>{{ room.trip.departure_datetime|date:"d/m/Y H:i" }}</small>
+        </a>
+    </li>
+    {% endfor %}
+</ul>
+{% else %}
+<p>No tienes conversaciones activas.</p>
+{% endif %}
+{% endblock %}
