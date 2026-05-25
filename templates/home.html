@@ -1,0 +1,39 @@
+{% extends 'base.html' %}
+
+{% block title %}Inicio — Orizon Routes{% endblock %}
+
+{% block content %}
+<div class="hero">
+    {% load static %}
+    <img src="{% static 'img/logo_transporte-removebg-preview.png' %}" alt="Orizon Routes" class="hero-logo">
+    <h1>Orizon Routes</h1>
+    <p>Conectamos transportistas con pasajeros.</p>
+</div>
+
+{% if user.is_authenticated %}
+    {% if user.role == 'conductor' %}
+    <div class="dashboard">
+        <h2>Panel de Conductor</h2>
+        <div class="quick-actions">
+            <a href="{% url 'trips:create' %}" class="btn btn-primary">Publicar nuevo viaje</a>
+            <a href="{% url 'trips:list' %}" class="btn">Mis viajes</a>
+            <a href="{% url 'vehicles:list' %}" class="btn">Mis vehículos</a>
+        </div>
+    </div>
+    {% elif user.role == 'pasajero' %}
+    <div class="dashboard">
+        <h2>Panel de Pasajero</h2>
+        <div class="quick-actions">
+            <a href="{% url 'trips:search' %}" class="btn btn-primary">Buscar viajes</a>
+            <a href="{% url 'trips:passenger_reservations' %}" class="btn">Mis reservas</a>
+            <a href="{% url 'chat:list' %}" class="btn">Mis chats</a>
+        </div>
+    </div>
+    {% endif %}
+{% else %}
+<div class="cta">
+    <a href="{% url 'users:register' %}" class="btn btn-primary">Registrarse</a>
+    <a href="{% url 'users:login' %}" class="btn">Iniciar Sesión</a>
+</div>
+{% endif %}
+{% endblock %}

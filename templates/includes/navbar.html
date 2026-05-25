@@ -1,0 +1,31 @@
+{% load static %}
+<nav class="navbar">
+    <div class="nav-brand">
+        <a href="{% url 'home' %}">
+            <img src="{% static 'img/logo_transporte-removebg-preview.png' %}" alt="Orizon Routes" class="nav-logo">
+            Orizon Routes
+        </a>
+    </div>
+    <ul class="nav-links">
+        {% if user.is_authenticated %}
+            {% if user.role == 'conductor' %}
+                <li><a href="{% url 'vehicles:list' %}">Mis Vehículos</a></li>
+                <li><a href="{% url 'trips:list' %}">Mis Viajes</a></li>
+            {% elif user.role == 'pasajero' %}
+                <li><a href="{% url 'trips:search' %}">Buscar Viajes</a></li>
+                <li><a href="{% url 'trips:passenger_reservations' %}">Mis Reservas</a></li>
+            {% endif %}
+            <li><a href="{% url 'chat:list' %}">Mis Chats</a></li>
+            <li><a href="{% url 'users:profile' %}">{{ user.username }}</a></li>
+            <li>
+                <form method="post" action="{% url 'users:logout' %}" style="display:inline;">
+                    {% csrf_token %}
+                    <button type="submit" class="btn-logout">Cerrar sesión</button>
+                </form>
+            </li>
+        {% else %}
+            <li><a href="{% url 'users:login' %}">Iniciar Sesión</a></li>
+            <li><a href="{% url 'users:register' %}">Registrarse</a></li>
+        {% endif %}
+    </ul>
+</nav>
