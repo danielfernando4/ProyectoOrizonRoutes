@@ -1,0 +1,83 @@
+{% extends 'base.html' %}
+
+{% block title %}Registro - Orizon Routes{% endblock %}
+
+{% block content %}
+<h1>Crear Cuenta</h1>
+
+<form method="post" novalidate>
+    {% csrf_token %}
+
+    {% if form.non_field_errors %}
+        <div class="errors">
+            {% for error in form.non_field_errors %}
+                <p>{{ error }}</p>
+            {% endfor %}
+        </div>
+    {% endif %}
+
+    <div>
+        <label for="{{ form.username.id_for_label }}">Nombre de usuario:</label>
+        {{ form.username }}
+        {% if form.username.errors %}
+            <div class="field-errors">
+                {% for error in form.username.errors %}
+                    <p>{{ error }}</p>
+                {% endfor %}
+            </div>
+        {% endif %}
+    </div>
+
+    <div>
+        <label for="{{ form.email.id_for_label }}">Correo electrónico:</label>
+        {{ form.email }}
+        {% if form.email.errors %}
+            <div class="field-errors">
+                {% for error in form.email.errors %}
+                    <p>{{ error }}</p>
+                {% endfor %}
+            </div>
+        {% endif %}
+    </div>
+
+    <div>
+        <label for="{{ form.password.id_for_label }}">Contraseña:</label>
+        {{ form.password }}
+        {% if form.password.errors %}
+            <div class="field-errors">
+                {% for error in form.password.errors %}
+                    <p>{{ error }}</p>
+                {% endfor %}
+            </div>
+        {% endif %}
+    </div>
+
+    <div>
+        <label for="{{ form.password2.id_for_label }}">Confirmar contraseña:</label>
+        {{ form.password2 }}
+        {% if form.password2.errors %}
+            <div class="field-errors">
+                {% for error in form.password2.errors %}
+                    <p>{{ error }}</p>
+                {% endfor %}
+            </div>
+        {% endif %}
+    </div>
+
+    <div>
+        <label for="{{ form.role.id_for_label }}">Rol:</label>
+        {{ form.role }}
+        {% if form.role.errors %}
+            <div class="field-errors">
+                {% for error in form.role.errors %}
+                    <p>{{ error }}</p>
+                {% endfor %}
+            </div>
+        {% endif %}
+    </div>
+
+    <button type="submit">Registrarse</button>
+</form>
+
+<p>¿Ya tienes cuenta? <a href="{% url 'users:login' %}">Inicia sesión</a></p>
+{% endblock %}

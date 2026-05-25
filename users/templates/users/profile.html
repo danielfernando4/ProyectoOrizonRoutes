@@ -1,0 +1,15 @@
+{% extends 'base.html' %}
+
+{% block title %}Perfil - Orizon Routes{% endblock %}
+
+{% block content %}
+<h1>Mi Perfil</h1>
+
+<div class="profile-info">
+    <p><strong>Nombre de usuario:</strong> {{ user.username }}</p>
+    <p><strong>Correo electrónico:</strong> {{ user.email }}</p>
+    <p><strong>Rol:</strong> {{ user.get_role_display }}</p>
+</div>
+
+<p><a href="{% url 'home' %}">Volver al inicio</a></p>
+{% endblock %}

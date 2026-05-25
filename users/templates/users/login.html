@@ -1,0 +1,47 @@
+{% extends 'base.html' %}
+
+{% block title %}Iniciar Sesión - Orizon Routes{% endblock %}
+
+{% block content %}
+<h1>Iniciar Sesión</h1>
+
+<form method="post" novalidate>
+    {% csrf_token %}
+
+    {% if form.non_field_errors %}
+        <div class="errors">
+            {% for error in form.non_field_errors %}
+                <p>{{ error }}</p>
+            {% endfor %}
+        </div>
+    {% endif %}
+
+    <div>
+        <label for="{{ form.username.id_for_label }}">Nombre de usuario:</label>
+        {{ form.username }}
+        {% if form.username.errors %}
+            <div class="field-errors">
+                {% for error in form.username.errors %}
+                    <p>{{ error }}</p>
+                {% endfor %}
+            </div>
+        {% endif %}
+    </div>
+
+    <div>
+        <label for="{{ form.password.id_for_label }}">Contraseña:</label>
+        {{ form.password }}
+        {% if form.password.errors %}
+            <div class="field-errors">
+                {% for error in form.password.errors %}
+                    <p>{{ error }}</p>
+                {% endfor %}
+            </div>
+        {% endif %}
+    </div>
+
+    <button type="submit">Iniciar Sesión</button>
+</form>
+
+<p>¿No tienes cuenta? <a href="{% url 'users:register' %}">Regístrate</a></p>
+{% endblock %}
