@@ -219,42 +219,53 @@ class PasswordResetTests(TestCase):
             role="pasajero",
         )
         self.reset_url = reverse("users:password_reset")
-        self.done_url = reverse("users:password_reset_done")
-        self.complete_url = reverse("users:password_reset_complete")
+        self.login_url = reverse("users:login")
 
-    def test_password_reset_valid_email(self):
-        response = self.client.post(self.reset_url, {"email": "testuser@example.com"}, follow=True)
-        self.assertContains(response, "reset-url")
-
-    def test_password_reset_invalid_email(self):
-        response = self.client.post(self.reset_url, {"email": "noexiste@example.com"}, follow=True)
-        self.assertNotContains(response, "reset-url")
-
-    def test_password_reset_confirm_valid_token(self):
-        uid = urlsafe_base64_encode(force_bytes(self.user.pk))
-        token = default_token_generator.make_token(self.user)
-        validate_url = reverse("users:password_reset_confirm", kwargs={"uidb64": uid, "token": token})
-
-        response = self.client.get(validate_url)
-        self.assertEqual(response.status_code, 302)
-        set_password_url = response.url
-        response = self.client.get(set_password_url)
+    def test_password_reset_get_shows_form(self):
+        response = self.client.get(self.reset_url)
         self.assertEqual(response.status_code, 200)
-        self.assertTemplateUsed(response, "users/password_reset_confirm.html")
-        self.assertContains(response, "Establecer Nueva Contraseña")
+        self.assertTemplateUsed(response, "users/password_reset_form.html")
 
-        response = self.client.post(set_password_url, {
-            "new_password1": "newtestpass456",
-            "new_password2": "newtestpass456",
+    def test_password_reset_valid_credentials(self):
+        response = self.client.post(self.reset_url, {
+            "username": "testuser",
+            "email": "testuser@example.com",
+            "new_password": "newtestpass456",
+            "confirm_password": "newtestpass456",
         })
-        self.assertRedirects(response, self.complete_url)
-
+        self.assertRedirects(response, self.login_url)
+        
+        # Verify the password has actually changed and can be used to login
         login_success = self.client.login(username="testuser", password="newtestpass456")
         self.assertTrue(login_success)
 
-    def test_password_reset_confirm_invalid_token(self):
-        uid = urlsafe_base64_encode(force_bytes(self.user.pk))
-        invalid_url = reverse("users:password_reset_confirm", kwargs={"uidb64": uid, "token": "bad-token"})
-        response = self.client.get(invalid_url)
+    def test_password_reset_invalid_credentials(self):
+        response = self.client.post(self.reset_url, {
+            "username": "testuser",
+            "email": "noexiste@example.com",
+            "new_password": "newtestpass456",
+            "confirm_password": "newtestpass456",
+        })
         self.assertEqual(response.status_code, 200)
-        self.assertContains(response, "inválido")
+        form = response.context["form"]
+        self.assertFalse(form.is_valid())
+        self.assertIn(
+            "Los datos proporcionados no coinciden con ninguna cuenta registrada.",
+            form.non_field_errors()
+        )
+
+    def test_password_reset_mismatched_passwords(self):
+        response = self.client.post(self.reset_url, {
+            "username": "testuser",
+            "email": "testuser@example.com",
+            "new_password": "newtestpass456",
+            "confirm_password": "differentpass",
+        })
+        self.assertEqual(response.status_code, 200)
+        form = response.context["form"]
+        self.assertFalse(form.is_valid())
+        self.assertIn(
+            "Las nuevas contraseñas no coinciden.",
+            form.errors["confirm_password"]
+        )
+
