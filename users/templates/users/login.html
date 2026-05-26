@@ -1,47 +1,75 @@
 {% extends 'base.html' %}
 
-{% block title %}Iniciar Sesión - Orizon Routes{% endblock %}
+{% block title %}Iniciar Sesión — Orizon Routes{% endblock %}
 
 {% block content %}
-<h1>Iniciar Sesión</h1>
+<div class="min-h-[70vh] flex items-center justify-center py-8">
+    <div class="w-full max-w-md fade-in-up">
+        <!-- Card -->
+        <div class="bg-white rounded-2xl shadow-xl border border-gray-100 overflow-hidden">
+            <!-- Header -->
+            <div class="bg-gradient-to-br from-blue-600 to-blue-700 px-8 py-8 text-center">
+                <div class="w-16 h-16 bg-white/20 backdrop-blur-sm rounded-2xl flex items-center justify-center mx-auto mb-4">
+                    <i class="fas fa-sign-in-alt text-2xl text-white"></i>
+                </div>
+                <h1 class="text-2xl font-bold text-white">Bienvenido de vuelta</h1>
+                <p class="text-blue-200 text-sm mt-1">Inicia sesión en tu cuenta</p>
+            </div>
 
-<form method="post" novalidate>
-    {% csrf_token %}
+            <!-- Form -->
+            <div class="p-8">
+                {% if form.non_field_errors %}
+                <div class="bg-red-50 border border-red-200 text-red-700 rounded-xl p-4 mb-6 text-sm flex items-start gap-3">
+                    <i class="fas fa-exclamation-circle mt-0.5"></i>
+                    <div>
+                        {% for error in form.non_field_errors %}
+                        <p>{{ error }}</p>
+                        {% endfor %}
+                    </div>
+                </div>
+                {% endif %}
 
-    {% if form.non_field_errors %}
-        <div class="errors">
-            {% for error in form.non_field_errors %}
-                <p>{{ error }}</p>
-            {% endfor %}
+                <form method="post" novalidate class="space-y-5">
+                    {% csrf_token %}
+                    <div>
+                        <label for="{{ form.username.id_for_label }}" class="block text-sm font-semibold text-gray-700 mb-1.5">
+                            <i class="fas fa-user text-gray-400 mr-1"></i> Usuario
+                        </label>
+                        <input type="text" name="username" id="{{ form.username.id_for_label }}" value="{{ form.username.value|default:'' }}"
+                               class="w-full px-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-blue-500 input-glow transition-all text-gray-900 placeholder-gray-400"
+                               placeholder="Tu nombre de usuario">
+                        {% if form.username.errors %}
+                        <p class="text-red-500 text-xs mt-1.5"><i class="fas fa-exclamation-triangle mr-1"></i>{{ form.username.errors.0 }}</p>
+                        {% endif %}
+                    </div>
+
+                    <div>
+                        <label for="{{ form.password.id_for_label }}" class="block text-sm font-semibold text-gray-700 mb-1.5">
+                            <i class="fas fa-lock text-gray-400 mr-1"></i> Contraseña
+                        </label>
+                        <input type="password" name="password" id="{{ form.password.id_for_label }}"
+                               class="w-full px-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-blue-500 input-glow transition-all text-gray-900 placeholder-gray-400"
+                               placeholder="••••••••">
+                        {% if form.password.errors %}
+                        <p class="text-red-500 text-xs mt-1.5"><i class="fas fa-exclamation-triangle mr-1"></i>{{ form.password.errors.0 }}</p>
+                        {% endif %}
+                        <div class="flex justify-end mt-2">
+                            <a href="{% url 'users:password_reset' %}" class="text-sm text-blue-600 hover:text-blue-800 font-medium transition-colors">¿Olvidaste tu contraseña?</a>
+                        </div>
+                    </div>
+
+                    <button type="submit" class="w-full bg-gradient-to-r from-blue-600 to-blue-700 hover:from-blue-700 hover:to-blue-800 text-white font-bold py-3.5 rounded-xl shadow-lg shadow-blue-600/25 hover:shadow-xl transition-all duration-300 hover:-translate-y-0.5">
+                        Iniciar Sesión
+                    </button>
+                </form>
+
+                <div class="mt-6 text-center">
+                    <p class="text-sm text-gray-500">¿No tienes cuenta?
+                        <a href="{% url 'users:register' %}" class="text-blue-600 hover:text-blue-700 font-semibold">Regístrate aquí</a>
+                    </p>
+                </div>
+            </div>
         </div>
-    {% endif %}
-
-    <div>
-        <label for="{{ form.username.id_for_label }}">Nombre de usuario:</label>
-        {{ form.username }}
-        {% if form.username.errors %}
-            <div class="field-errors">
-                {% for error in form.username.errors %}
-                    <p>{{ error }}</p>
-                {% endfor %}
-            </div>
-        {% endif %}
     </div>
-
-    <div>
-        <label for="{{ form.password.id_for_label }}">Contraseña:</label>
-        {{ form.password }}
-        {% if form.password.errors %}
-            <div class="field-errors">
-                {% for error in form.password.errors %}
-                    <p>{{ error }}</p>
-                {% endfor %}
-            </div>
-        {% endif %}
-    </div>
-
-    <button type="submit">Iniciar Sesión</button>
-</form>
-
-<p>¿No tienes cuenta? <a href="{% url 'users:register' %}">Regístrate</a></p>
+</div>
 {% endblock %}

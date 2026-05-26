@@ -3,35 +3,58 @@
 {% block title %}Mis Vehículos — Orizon Routes{% endblock %}
 
 {% block content %}
-<h1>Mis Vehículos</h1>
+<div class="fade-in-up">
+    <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-4 mb-8">
+        <div>
+            <h1 class="text-3xl font-bold text-gray-900 mb-1">Mis Vehículos</h1>
+            <p class="text-gray-500 text-sm">Administra los vehículos registrados en tu cuenta.</p>
+        </div>
+        <a href="{% url 'vehicles:create' %}" class="inline-flex items-center gap-2 bg-gradient-to-r from-blue-600 to-blue-700 hover:from-blue-700 hover:to-blue-800 text-white font-semibold py-2.5 px-6 rounded-xl transition-all shadow-lg shadow-blue-600/25 hover:shadow-xl hover:-translate-y-0.5 whitespace-nowrap">
+            <i class="fas fa-plus"></i> Nuevo Vehículo
+        </a>
+    </div>
 
-<a href="{% url 'vehicles:create' %}" class="btn">Registrar nuevo vehículo</a>
-
-{% if vehicles %}
-<table>
-    <thead>
-        <tr>
-            <th>Marca</th>
-            <th>Modelo</th>
-            <th>Capacidad</th>
-            <th>Acciones</th>
-        </tr>
-    </thead>
-    <tbody>
+    {% if vehicles %}
+    <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-5 stagger">
         {% for vehicle in vehicles %}
-        <tr>
-            <td>{{ vehicle.brand }}</td>
-            <td>{{ vehicle.model }}</td>
-            <td>{{ vehicle.capacity }}</td>
-            <td class="actions-cell">
-                <a href="{% url 'vehicles:edit' vehicle.pk %}" class="btn btn-sm btn-secondary">Editar</a>
-                <a href="{% url 'vehicles:delete' vehicle.pk %}" class="btn btn-sm btn-danger">Eliminar</a>
-            </td>
-        </tr>
+        <div class="bg-white rounded-2xl shadow-sm border border-gray-200 hover:shadow-lg hover:border-blue-200 transition-all duration-300 overflow-hidden group">
+            <div class="p-6">
+                <div class="flex items-center gap-4 mb-4">
+                    <div class="w-12 h-12 bg-blue-50 text-blue-600 rounded-xl flex items-center justify-center group-hover:scale-110 transition-transform">
+                        <i class="fas fa-car text-xl"></i>
+                    </div>
+                    <div>
+                        <h3 class="font-bold text-gray-900">{{ vehicle.brand }}</h3>
+                        <p class="text-sm text-gray-500">{{ vehicle.model }}</p>
+                    </div>
+                </div>
+                <div class="flex items-center gap-2 text-sm text-gray-600 bg-gray-50 px-3 py-2 rounded-lg">
+                    <i class="fas fa-users text-gray-400"></i>
+                    <span>Capacidad: <strong class="text-gray-900">{{ vehicle.capacity }}</strong> pasajeros</span>
+                </div>
+            </div>
+            <div class="border-t border-gray-100 px-6 py-3 bg-gray-50/50 flex gap-2">
+                <a href="{% url 'vehicles:edit' vehicle.pk %}" class="flex-1 text-center bg-white border border-gray-200 hover:border-blue-300 hover:text-blue-600 text-gray-700 font-medium py-2 rounded-lg transition-colors text-sm">
+                    <i class="fas fa-edit mr-1"></i> Editar
+                </a>
+                <a href="{% url 'vehicles:delete' vehicle.pk %}" class="flex-1 text-center bg-white border border-gray-200 hover:border-red-300 hover:text-red-600 text-gray-700 font-medium py-2 rounded-lg transition-colors text-sm">
+                    <i class="fas fa-trash mr-1"></i> Eliminar
+                </a>
+            </div>
+        </div>
         {% endfor %}
-    </tbody>
-</table>
-{% else %}
-<p>No tienes vehículos registrados.</p>
-{% endif %}
+    </div>
+    {% else %}
+    <div class="text-center py-16 bg-white rounded-2xl shadow-sm border border-gray-100">
+        <div class="w-16 h-16 bg-gray-100 text-gray-400 rounded-2xl flex items-center justify-center mx-auto mb-4">
+            <i class="fas fa-car text-2xl"></i>
+        </div>
+        <h3 class="text-lg font-semibold text-gray-900 mb-1">Sin vehículos</h3>
+        <p class="text-gray-500 text-sm mb-6">Registra tu primer vehículo para empezar a publicar viajes.</p>
+        <a href="{% url 'vehicles:create' %}" class="inline-flex items-center gap-2 bg-blue-600 hover:bg-blue-700 text-white font-medium py-2.5 px-6 rounded-xl transition-colors shadow-sm">
+            <i class="fas fa-plus"></i> Registrar vehículo
+        </a>
+    </div>
+    {% endif %}
+</div>
 {% endblock %}

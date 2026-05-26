@@ -3,19 +3,70 @@
 {% block title %}Reserva Confirmada — Orizon Routes{% endblock %}
 
 {% block content %}
-<h1>¡Reserva Confirmada!</h1>
+<div class="max-w-lg mx-auto fade-in-up">
+    <div class="bg-white rounded-2xl shadow-lg border border-gray-100 overflow-hidden">
+        <!-- Success Header -->
+        <div class="bg-gradient-to-br from-emerald-500 to-emerald-600 px-8 py-10 text-center relative overflow-hidden">
+            <div class="absolute top-0 right-0 w-40 h-40 bg-white/10 rounded-full -translate-y-1/2 translate-x-1/2"></div>
+            <div class="relative z-10">
+                <div class="w-20 h-20 bg-white/20 backdrop-blur-sm rounded-full flex items-center justify-center mx-auto mb-4">
+                    <i class="fas fa-check text-4xl text-white"></i>
+                </div>
+                <h1 class="text-2xl font-bold text-white">¡Reserva Confirmada!</h1>
+                <p class="text-emerald-100 mt-1">Tu viaje está listo</p>
+            </div>
+        </div>
 
-<div class="reservation-detail">
-    <h2>Detalles de la reserva</h2>
-    <p><strong>Código de reserva:</strong> <code>{{ reservation.reservation_code }}</code></p>
-    <p><strong>Viaje:</strong> {{ reservation.trip.origin }} → {{ reservation.trip.destination }}</p>
-    <p><strong>Fecha:</strong> {{ reservation.trip.departure_datetime|date:"d/m/Y H:i" }}</p>
-    <p><strong>Asientos reservados:</strong> {{ reservation.quantity }}</p>
-    <p><strong>Precio por asiento:</strong> ${{ reservation.trip.price_per_seat }}</p>
-    <p><strong>Total pagado:</strong> ${{ reservation.trip.price_per_seat|floatformat:2 }} × {{ reservation.quantity }}</p>
-    <p><strong>Estado del pago:</strong> {{ reservation.get_payment_status_display }}</p>
+        <!-- Details -->
+        <div class="p-8 space-y-4">
+            <div class="bg-gray-50 rounded-xl p-4 border border-gray-100">
+                <div class="flex items-center gap-3 mb-3">
+                    <div class="w-8 h-8 bg-blue-100 text-blue-600 rounded-lg flex items-center justify-center">
+                        <i class="fas fa-hashtag text-sm"></i>
+                    </div>
+                    <div>
+                        <p class="text-xs text-gray-500 font-medium">Código de reserva</p>
+                        <p class="font-mono font-bold text-gray-900 text-lg">{{ reservation.reservation_code }}</p>
+                    </div>
+                </div>
+            </div>
+
+            <div class="space-y-3">
+                <div class="flex justify-between items-center py-2 border-b border-gray-100">
+                    <span class="text-sm text-gray-500"><i class="fas fa-route mr-2 text-gray-400"></i>Viaje</span>
+                    <span class="font-semibold text-gray-900">{{ reservation.trip.origin }} → {{ reservation.trip.destination }}</span>
+                </div>
+                <div class="flex justify-between items-center py-2 border-b border-gray-100">
+                    <span class="text-sm text-gray-500"><i class="far fa-calendar-alt mr-2 text-gray-400"></i>Fecha</span>
+                    <span class="font-semibold text-gray-900">{{ reservation.trip.departure_datetime|date:"d M Y, H:i" }}</span>
+                </div>
+                <div class="flex justify-between items-center py-2 border-b border-gray-100">
+                    <span class="text-sm text-gray-500"><i class="fas fa-chair mr-2 text-gray-400"></i>Asientos</span>
+                    <span class="font-semibold text-gray-900">{{ reservation.quantity }}</span>
+                </div>
+                <div class="flex justify-between items-center py-2 border-b border-gray-100">
+                    <span class="text-sm text-gray-500"><i class="fas fa-tag mr-2 text-gray-400"></i>Precio unitario</span>
+                    <span class="font-semibold text-gray-900">${{ reservation.trip.price_per_seat }}</span>
+                </div>
+                <div class="flex justify-between items-center py-3 bg-blue-50 px-4 rounded-xl">
+                    <span class="font-bold text-blue-900">Total pagado</span>
+                    <span class="font-bold text-blue-600 text-xl">${{ reservation.trip.price_per_seat|floatformat:2 }} × {{ reservation.quantity }}</span>
+                </div>
+                <div class="flex justify-between items-center py-2">
+                    <span class="text-sm text-gray-500">Estado del pago</span>
+                    <span class="bg-green-100 text-green-700 text-xs font-bold px-3 py-1 rounded-full">{{ reservation.get_payment_status_display }}</span>
+                </div>
+            </div>
+
+            <div class="flex gap-3 pt-4">
+                <a href="{% url 'trips:search' %}" class="flex-1 bg-gradient-to-r from-blue-600 to-blue-700 hover:from-blue-700 hover:to-blue-800 text-white font-bold py-3 rounded-xl text-center shadow-lg shadow-blue-600/25 hover:shadow-xl transition-all text-sm">
+                    <i class="fas fa-search mr-2"></i>Buscar más viajes
+                </a>
+                <a href="{% url 'trips:detail' reservation.trip.pk %}" class="flex-1 bg-gray-100 hover:bg-gray-200 text-gray-700 font-medium py-3 rounded-xl text-center transition-colors text-sm">
+                    Ver viaje
+                </a>
+            </div>
+        </div>
+    </div>
 </div>
-
-<a href="{% url 'trips:search' %}" class="btn">Buscar más viajes</a>
-<a href="{% url 'trips:detail' reservation.trip.pk %}" class="btn">Ver viaje</a>
 {% endblock %}

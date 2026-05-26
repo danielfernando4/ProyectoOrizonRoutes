@@ -1,39 +1,182 @@
 {% extends 'base.html' %}
+{% load static %}
 
 {% block title %}Inicio — Orizon Routes{% endblock %}
 
 {% block content %}
-<div class="hero">
-    {% load static %}
-    <img src="{% static 'img/logo_transporte-removebg-preview.png' %}" alt="Orizon Routes" class="hero-logo">
-    <h1>Orizon Routes</h1>
-    <p>Conectamos transportistas con pasajeros.</p>
+<!-- Hero Section -->
+<div class="relative -mt-8 -mx-4 sm:-mx-6 lg:-mx-8 mb-12 overflow-hidden rounded-b-3xl">
+    <div class="bg-gradient-to-br from-slate-900 via-blue-900 to-blue-800 hero-pattern">
+        <div class="max-w-6xl mx-auto px-6 py-16 md:py-24 lg:py-28 relative z-10">
+            <div class="flex flex-col md:flex-row items-center gap-10 md:gap-16">
+                <!-- Left: Copy -->
+                <div class="flex-1 text-center md:text-left">
+                    <div class="inline-flex items-center gap-2 bg-white/10 backdrop-blur-sm border border-white/20 rounded-full px-4 py-1.5 mb-6">
+                        <span class="w-2 h-2 bg-green-400 rounded-full animate-pulse"></span>
+                        <span class="text-blue-200 text-xs font-medium tracking-wide">Plataforma activa · Ecuador</span>
+                    </div>
+                    <h1 class="text-4xl md:text-5xl lg:text-6xl font-extrabold text-white leading-tight mb-6">
+                        Viaja <span class="bg-gradient-to-r from-blue-300 to-cyan-300 bg-clip-text text-transparent">compartido</span>,
+                        <br>viaja mejor.
+                    </h1>
+                    <p class="text-lg md:text-xl text-blue-200/90 max-w-lg mb-8 leading-relaxed">
+                        Conectamos conductores con pasajeros para viajes interurbanos seguros, económicos y directos en todo Ecuador.
+                    </p>
+
+                    {% if not user.is_authenticated %}
+                    <div class="flex flex-col sm:flex-row gap-3 justify-center md:justify-start">
+                        <a href="{% url 'users:register' %}" class="bg-white text-blue-900 hover:bg-blue-50 font-bold py-3.5 px-8 rounded-xl transition-all duration-300 shadow-lg shadow-blue-900/30 hover:shadow-xl hover:-translate-y-0.5 text-center">
+                            <i class="fas fa-user-plus mr-2"></i>Crear Cuenta Gratis
+                        </a>
+                        <a href="{% url 'users:login' %}" class="bg-white/10 backdrop-blur-sm border border-white/30 text-white hover:bg-white/20 font-semibold py-3.5 px-8 rounded-xl transition-all duration-300 text-center">
+                            Iniciar Sesión
+                        </a>
+                    </div>
+                    {% endif %}
+                </div>
+
+                <!-- Right: Logo illustration -->
+                <div class="flex-shrink-0 hidden md:flex">
+                    <div class="relative">
+                        <div class="absolute -inset-8 bg-blue-500/20 rounded-full blur-3xl"></div>
+                        <img src="{% static 'img/logo_transporte-removebg-preview.png' %}" alt="Orizon Routes" class="relative w-72 lg:w-80 drop-shadow-2xl">
+                    </div>
+                </div>
+            </div>
+
+            <!-- Stats row -->
+            <div class="grid grid-cols-3 gap-4 mt-12 md:mt-16 max-w-lg {% if user.is_authenticated %}mx-0{% else %}mx-auto md:mx-0{% endif %}">
+                <div class="text-center md:text-left">
+                    <p class="text-2xl md:text-3xl font-bold text-white">100%</p>
+                    <p class="text-xs text-blue-300/80 font-medium">Seguro</p>
+                </div>
+                <div class="text-center md:text-left">
+                    <p class="text-2xl md:text-3xl font-bold text-white">24/7</p>
+                    <p class="text-xs text-blue-300/80 font-medium">Disponibilidad</p>
+                </div>
+                <div class="text-center md:text-left">
+                    <p class="text-2xl md:text-3xl font-bold text-white">PayPal</p>
+                    <p class="text-xs text-blue-300/80 font-medium">Pagos seguros</p>
+                </div>
+            </div>
+        </div>
+    </div>
 </div>
 
 {% if user.is_authenticated %}
-    {% if user.role == 'conductor' %}
-    <div class="dashboard">
-        <h2>Panel de Conductor</h2>
-        <div class="quick-actions">
-            <a href="{% url 'trips:create' %}" class="btn btn-primary">Publicar nuevo viaje</a>
-            <a href="{% url 'trips:list' %}" class="btn">Mis viajes</a>
-            <a href="{% url 'vehicles:list' %}" class="btn">Mis vehículos</a>
+<!-- Dashboard Section -->
+<div class="fade-in-up">
+    <div class="flex items-center gap-4 mb-8">
+        <div class="w-14 h-14 rounded-2xl bg-gradient-to-br from-blue-600 to-blue-700 flex items-center justify-center text-white font-bold text-xl shadow-lg shadow-blue-600/30">
+            {{ user.username|make_list|first|upper }}
+        </div>
+        <div>
+            <h2 class="text-2xl font-bold text-gray-900">Hola, {{ user.get_full_name|default:user.username }} 👋</h2>
+            <p class="text-gray-500 text-sm">
+                {% if user.role == 'conductor' %}Panel de Conductor{% else %}Panel de Pasajero{% endif %}
+                · {{ user.email }}
+            </p>
         </div>
     </div>
+
+    {% if user.role == 'conductor' %}
+    <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-5 stagger">
+        <!-- Card: Publicar viaje -->
+        <a href="{% url 'trips:create' %}" class="group relative bg-gradient-to-br from-blue-600 to-blue-700 rounded-2xl p-6 text-white shadow-lg shadow-blue-600/25 hover:shadow-xl hover:-translate-y-1 transition-all duration-300 overflow-hidden">
+            <div class="absolute top-0 right-0 w-32 h-32 bg-white/10 rounded-full -translate-y-1/2 translate-x-1/2"></div>
+            <div class="relative z-10">
+                <div class="w-12 h-12 bg-white/20 backdrop-blur-sm rounded-xl flex items-center justify-center mb-4 group-hover:scale-110 transition-transform">
+                    <i class="fas fa-plus text-xl"></i>
+                </div>
+                <h3 class="font-bold text-lg mb-1">Publicar Viaje</h3>
+                <p class="text-blue-100 text-sm">Crea una nueva ruta y conecta con pasajeros.</p>
+            </div>
+        </a>
+
+        <!-- Card: Mis viajes -->
+        <a href="{% url 'trips:list' %}" class="group bg-white rounded-2xl p-6 border border-gray-200 shadow-sm hover:shadow-lg hover:border-blue-200 hover:-translate-y-1 transition-all duration-300">
+            <div class="w-12 h-12 bg-indigo-50 text-indigo-600 rounded-xl flex items-center justify-center mb-4 group-hover:scale-110 transition-transform">
+                <i class="fas fa-route text-xl"></i>
+            </div>
+            <h3 class="font-bold text-lg text-gray-900 mb-1">Mis Viajes</h3>
+            <p class="text-gray-500 text-sm">Administra tus viajes publicados.</p>
+        </a>
+
+        <!-- Card: Mis vehículos -->
+        <a href="{% url 'vehicles:list' %}" class="group bg-white rounded-2xl p-6 border border-gray-200 shadow-sm hover:shadow-lg hover:border-blue-200 hover:-translate-y-1 transition-all duration-300">
+            <div class="w-12 h-12 bg-emerald-50 text-emerald-600 rounded-xl flex items-center justify-center mb-4 group-hover:scale-110 transition-transform">
+                <i class="fas fa-car text-xl"></i>
+            </div>
+            <h3 class="font-bold text-lg text-gray-900 mb-1">Mis Vehículos</h3>
+            <p class="text-gray-500 text-sm">Registra y gestiona tu flota.</p>
+        </a>
+    </div>
+
     {% elif user.role == 'pasajero' %}
-    <div class="dashboard">
-        <h2>Panel de Pasajero</h2>
-        <div class="quick-actions">
-            <a href="{% url 'trips:search' %}" class="btn btn-primary">Buscar viajes</a>
-            <a href="{% url 'trips:passenger_reservations' %}" class="btn">Mis reservas</a>
-            <a href="{% url 'chat:list' %}" class="btn">Mis chats</a>
-        </div>
+    <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-5 stagger">
+        <!-- Card: Buscar viajes -->
+        <a href="{% url 'trips:search' %}" class="group relative bg-gradient-to-br from-blue-600 to-blue-700 rounded-2xl p-6 text-white shadow-lg shadow-blue-600/25 hover:shadow-xl hover:-translate-y-1 transition-all duration-300 overflow-hidden">
+            <div class="absolute top-0 right-0 w-32 h-32 bg-white/10 rounded-full -translate-y-1/2 translate-x-1/2"></div>
+            <div class="relative z-10">
+                <div class="w-12 h-12 bg-white/20 backdrop-blur-sm rounded-xl flex items-center justify-center mb-4 group-hover:scale-110 transition-transform">
+                    <i class="fas fa-search text-xl"></i>
+                </div>
+                <h3 class="font-bold text-lg mb-1">Buscar Viajes</h3>
+                <p class="text-blue-100 text-sm">Encuentra tu próxima ruta ideal.</p>
+            </div>
+        </a>
+
+        <!-- Card: Mis reservas -->
+        <a href="{% url 'trips:passenger_reservations' %}" class="group bg-white rounded-2xl p-6 border border-gray-200 shadow-sm hover:shadow-lg hover:border-blue-200 hover:-translate-y-1 transition-all duration-300">
+            <div class="w-12 h-12 bg-amber-50 text-amber-600 rounded-xl flex items-center justify-center mb-4 group-hover:scale-110 transition-transform">
+                <i class="fas fa-ticket-alt text-xl"></i>
+            </div>
+            <h3 class="font-bold text-lg text-gray-900 mb-1">Mis Reservas</h3>
+            <p class="text-gray-500 text-sm">Revisa tus viajes comprados.</p>
+        </a>
+
+        <!-- Card: Mis chats -->
+        <a href="{% url 'chat:list' %}" class="group bg-white rounded-2xl p-6 border border-gray-200 shadow-sm hover:shadow-lg hover:border-blue-200 hover:-translate-y-1 transition-all duration-300">
+            <div class="w-12 h-12 bg-violet-50 text-violet-600 rounded-xl flex items-center justify-center mb-4 group-hover:scale-110 transition-transform">
+                <i class="fas fa-comments text-xl"></i>
+            </div>
+            <h3 class="font-bold text-lg text-gray-900 mb-1">Mis Chats</h3>
+            <p class="text-gray-500 text-sm">Habla con tus conductores.</p>
+        </a>
     </div>
     {% endif %}
+</div>
+
 {% else %}
-<div class="cta">
-    <a href="{% url 'users:register' %}" class="btn btn-primary">Registrarse</a>
-    <a href="{% url 'users:login' %}" class="btn">Iniciar Sesión</a>
+<!-- Features Section for guests -->
+<div class="fade-in-up">
+    <div class="text-center mb-12">
+        <h2 class="text-3xl font-bold text-gray-900 mb-3">¿Cómo funciona?</h2>
+        <p class="text-gray-500 max-w-xl mx-auto">Tres simples pasos para viajar por Ecuador de forma compartida.</p>
+    </div>
+    <div class="grid grid-cols-1 md:grid-cols-3 gap-8 stagger">
+        <div class="text-center p-6">
+            <div class="w-16 h-16 bg-blue-100 text-blue-600 rounded-2xl flex items-center justify-center mx-auto mb-5 shadow-sm">
+                <i class="fas fa-user-plus text-2xl"></i>
+            </div>
+            <h3 class="font-bold text-lg text-gray-900 mb-2">1. Regístrate</h3>
+            <p class="text-gray-500 text-sm leading-relaxed">Crea tu cuenta gratis como conductor o pasajero en segundos.</p>
+        </div>
+        <div class="text-center p-6">
+            <div class="w-16 h-16 bg-indigo-100 text-indigo-600 rounded-2xl flex items-center justify-center mx-auto mb-5 shadow-sm">
+                <i class="fas fa-search-location text-2xl"></i>
+            </div>
+            <h3 class="font-bold text-lg text-gray-900 mb-2">2. Encuentra tu ruta</h3>
+            <p class="text-gray-500 text-sm leading-relaxed">Busca viajes disponibles o publica tu propia ruta como conductor.</p>
+        </div>
+        <div class="text-center p-6">
+            <div class="w-16 h-16 bg-emerald-100 text-emerald-600 rounded-2xl flex items-center justify-center mx-auto mb-5 shadow-sm">
+                <i class="fas fa-shield-alt text-2xl"></i>
+            </div>
+            <h3 class="font-bold text-lg text-gray-900 mb-2">3. Paga seguro</h3>
+            <p class="text-gray-500 text-sm leading-relaxed">Reserva y paga con PayPal de forma segura y al instante.</p>
+        </div>
+    </div>
 </div>
 {% endif %}
 {% endblock %}

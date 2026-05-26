@@ -1,15 +1,60 @@
 {% extends 'base.html' %}
 
-{% block title %}Perfil - Orizon Routes{% endblock %}
+{% block title %}Mi Perfil — Orizon Routes{% endblock %}
 
 {% block content %}
-<h1>Mi Perfil</h1>
+<div class="max-w-2xl mx-auto fade-in-up">
+    <div class="bg-white rounded-2xl shadow-lg border border-gray-100 overflow-hidden">
+        <!-- Header -->
+        <div class="bg-gradient-to-br from-blue-600 to-blue-700 px-8 py-10 text-center relative overflow-hidden">
+            <div class="absolute top-0 right-0 w-40 h-40 bg-white/5 rounded-full -translate-y-1/2 translate-x-1/2"></div>
+            <div class="absolute bottom-0 left-0 w-32 h-32 bg-white/5 rounded-full translate-y-1/2 -translate-x-1/2"></div>
+            <div class="relative z-10">
+                <div class="w-20 h-20 rounded-2xl bg-white/20 backdrop-blur-sm flex items-center justify-center mx-auto mb-4 text-3xl font-bold text-white shadow-lg">
+                    {{ user.username|make_list|first|upper }}
+                </div>
+                <h1 class="text-2xl font-bold text-white">{{ user.get_full_name|default:user.username }}</h1>
+                <span class="inline-flex items-center gap-1.5 bg-white/20 backdrop-blur-sm text-blue-100 text-xs font-medium px-3 py-1 rounded-full mt-2">
+                    <i class="fas {% if user.role == 'conductor' %}fa-steering-wheel{% else %}fa-user{% endif %}"></i>
+                    {{ user.get_role_display }}
+                </span>
+            </div>
+        </div>
 
-<div class="profile-info">
-    <p><strong>Nombre de usuario:</strong> {{ user.username }}</p>
-    <p><strong>Correo electrónico:</strong> {{ user.email }}</p>
-    <p><strong>Rol:</strong> {{ user.get_role_display }}</p>
+        <!-- Info -->
+        <div class="p-8 space-y-5">
+            <div class="flex items-center gap-4 p-4 bg-gray-50 rounded-xl">
+                <div class="w-10 h-10 bg-blue-100 text-blue-600 rounded-lg flex items-center justify-center flex-shrink-0">
+                    <i class="fas fa-user"></i>
+                </div>
+                <div>
+                    <p class="text-xs text-gray-500 font-medium uppercase tracking-wider">Usuario</p>
+                    <p class="font-semibold text-gray-900">{{ user.username }}</p>
+                </div>
+            </div>
+            <div class="flex items-center gap-4 p-4 bg-gray-50 rounded-xl">
+                <div class="w-10 h-10 bg-indigo-100 text-indigo-600 rounded-lg flex items-center justify-center flex-shrink-0">
+                    <i class="fas fa-envelope"></i>
+                </div>
+                <div>
+                    <p class="text-xs text-gray-500 font-medium uppercase tracking-wider">Correo electrónico</p>
+                    <p class="font-semibold text-gray-900">{{ user.email }}</p>
+                </div>
+            </div>
+            <div class="flex items-center gap-4 p-4 bg-gray-50 rounded-xl">
+                <div class="w-10 h-10 bg-emerald-100 text-emerald-600 rounded-lg flex items-center justify-center flex-shrink-0">
+                    <i class="fas fa-id-badge"></i>
+                </div>
+                <div>
+                    <p class="text-xs text-gray-500 font-medium uppercase tracking-wider">Rol</p>
+                    <p class="font-semibold text-gray-900">{{ user.get_role_display }}</p>
+                </div>
+            </div>
+
+            <a href="{% url 'home' %}" class="inline-flex items-center gap-2 text-sm font-medium text-gray-500 hover:text-blue-600 transition-colors mt-4">
+                <i class="fas fa-arrow-left"></i> Volver al inicio
+            </a>
+        </div>
+    </div>
 </div>
-
-<p><a href="{% url 'home' %}">Volver al inicio</a></p>
 {% endblock %}

@@ -5,26 +5,74 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>{% block title %}Orizon Routes{% endblock %}</title>
     {% load static %}
+    <!-- Google Fonts: Inter -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <!-- FontAwesome for Icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <!-- Tailwind CSS (CDN) -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    fontFamily: {
+                        sans: ['Inter', 'sans-serif'],
+                    },
+                    colors: {
+                        primary: {
+                            50: '#eff6ff',
+                            100: '#dbeafe',
+                            200: '#bfdbfe',
+                            300: '#93c5fd',
+                            400: '#60a5fa',
+                            500: '#3b82f6',
+                            600: '#2563eb', // Primary Blue
+                            700: '#1d4ed8',
+                            800: '#1e40af',
+                            900: '#1e3a8a',
+                        }
+                    }
+                }
+            }
+        }
+    </script>
     <link rel="stylesheet" href="{% static 'css/style.css' %}">
     {% block styles %}{% endblock %}
 </head>
-<body>
+<body class="bg-gray-50 text-gray-800 font-sans antialiased min-h-screen flex flex-col">
     {% include 'includes/navbar.html' %}
 
     {% if messages %}
-    <div class="messages-container">
-        <ul class="messages">
+    <div class="max-w-4xl mx-auto px-4 w-full mt-6">
+        <div class="space-y-3">
             {% for message in messages %}
-            <li class="{{ message.tags }}">{{ message }}</li>
+            <div class="p-4 rounded-xl shadow-sm border-l-4 flex items-center gap-3
+                {% if message.tags == 'success' %}bg-green-50 border-green-500 text-green-800
+                {% elif message.tags == 'error' %}bg-red-50 border-red-500 text-red-800
+                {% elif message.tags == 'warning' %}bg-yellow-50 border-yellow-500 text-yellow-800
+                {% else %}bg-blue-50 border-blue-500 text-blue-800{% endif %}">
+                <i class="fas text-lg {% if message.tags == 'success' %}fa-check-circle text-green-500
+                   {% elif message.tags == 'error' %}fa-exclamation-circle text-red-500
+                   {% elif message.tags == 'warning' %}fa-exclamation-triangle text-yellow-500
+                   {% else %}fa-info-circle text-blue-500{% endif %}"></i>
+                <p class="font-medium text-sm">{{ message }}</p>
+            </div>
             {% endfor %}
-        </ul>
+        </div>
     </div>
     {% endif %}
 
-    <main>
+    <main class="flex-grow max-w-6xl w-full mx-auto px-4 sm:px-6 lg:px-8 py-8">
         {% block content %}
         {% endblock %}
     </main>
+
+    <!-- Footer -->
+    <footer class="bg-white border-t border-gray-200 mt-auto py-6 text-center text-sm text-gray-500">
+        <p>&copy; {% now "Y" %} Orizon Routes. Todos los derechos reservados.</p>
+    </footer>
 
     {% block scripts %}{% endblock %}
 </body>

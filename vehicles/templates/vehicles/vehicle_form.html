@@ -5,12 +5,38 @@
 {% endblock %}
 
 {% block content %}
-<h1>{% if form.instance.pk %}Editar Vehículo{% else %}Registrar Nuevo Vehículo{% endif %}</h1>
-
-<form method="post">
-    {% csrf_token %}
-    {{ form.as_p }}
-    <button type="submit" class="btn">Guardar</button>
-    <a href="{% url 'vehicles:list' %}" class="btn">Cancelar</a>
-</form>
+<div class="max-w-lg mx-auto fade-in-up">
+    <a href="{% url 'vehicles:list' %}" class="inline-flex items-center gap-2 text-sm font-medium text-gray-500 hover:text-blue-600 transition-colors mb-6">
+        <i class="fas fa-arrow-left"></i> Volver a vehículos
+    </a>
+    <div class="bg-white rounded-2xl shadow-lg border border-gray-100 overflow-hidden">
+        <div class="bg-gradient-to-br from-blue-600 to-blue-700 px-8 py-6 text-center">
+            <div class="w-14 h-14 bg-white/20 backdrop-blur-sm rounded-2xl flex items-center justify-center mx-auto mb-3">
+                <i class="fas fa-car text-2xl text-white"></i>
+            </div>
+            <h1 class="text-xl font-bold text-white">{% if form.instance.pk %}Editar Vehículo{% else %}Registrar Nuevo Vehículo{% endif %}</h1>
+        </div>
+        <div class="p-8">
+            <form method="post" class="space-y-5">
+                {% csrf_token %}
+                {% for field in form %}
+                <div>
+                    <label for="{{ field.id_for_label }}" class="block text-sm font-semibold text-gray-700 mb-1.5">{{ field.label }}</label>
+                    <input type="{{ field.field.widget.input_type|default:'text' }}" name="{{ field.html_name }}" id="{{ field.id_for_label }}" value="{{ field.value|default:'' }}"
+                           class="w-full px-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-blue-500 input-glow transition-all text-gray-900"
+                           {% if field.field.required %}required{% endif %}>
+                    {% if field.help_text %}<p class="text-gray-400 text-xs mt-1">{{ field.help_text }}</p>{% endif %}
+                    {% if field.errors %}<p class="text-red-500 text-xs mt-1.5"><i class="fas fa-exclamation-triangle mr-1"></i>{{ field.errors.0 }}</p>{% endif %}
+                </div>
+                {% endfor %}
+                <div class="flex gap-3 pt-2">
+                    <button type="submit" class="flex-1 bg-gradient-to-r from-blue-600 to-blue-700 hover:from-blue-700 hover:to-blue-800 text-white font-bold py-3 rounded-xl shadow-lg shadow-blue-600/25 hover:shadow-xl transition-all">
+                        <i class="fas fa-save mr-2"></i>Guardar
+                    </button>
+                    <a href="{% url 'vehicles:list' %}" class="bg-gray-100 hover:bg-gray-200 text-gray-700 font-medium py-3 px-6 rounded-xl transition-colors">Cancelar</a>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
 {% endblock %}

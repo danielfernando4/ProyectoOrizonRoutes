@@ -3,36 +3,79 @@
 {% block title %}Mis Viajes — Orizon Routes{% endblock %}
 
 {% block content %}
-<h1>Mis Viajes</h1>
+<div class="flex flex-col sm:flex-row sm:items-center justify-between gap-4 mb-8 fade-in-up">
+    <div>
+        <h1 class="text-3xl font-bold text-gray-900 mb-2">Mis Viajes</h1>
+        <p class="text-gray-500">Administra los viajes que has publicado como conductor.</p>
+    </div>
+    <a href="{% url 'trips:create' %}" class="inline-flex items-center gap-2 bg-primary-600 hover:bg-primary-700 text-white font-medium py-2.5 px-6 rounded-lg transition-colors shadow-sm whitespace-nowrap">
+        <i class="fas fa-plus"></i> Publicar viaje
+    </a>
+</div>
 
-<a href="{% url 'trips:create' %}" class="btn btn-primary mb-2">Publicar nuevo viaje</a>
-
-<div class="tab-bar mb-2">
-    <a href="?tab=active" class="tab {% if tab == 'active' %}active{% endif %}">Activos</a>
-    <a href="?tab=past" class="tab {% if tab == 'past' %}active{% endif %}">Pasados</a>
-    <a href="?tab=cancelled" class="tab {% if tab == 'cancelled' %}active{% endif %}">Cancelados</a>
+<!-- Tabs -->
+<div class="border-b border-gray-200 mb-8 fade-in-up" style="animation-delay: 0.1s;">
+    <nav class="-mb-px flex space-x-8" aria-label="Tabs">
+        <a href="?tab=active" class="whitespace-nowrap py-4 px-1 border-b-2 font-medium text-sm transition-colors {% if tab == 'active' %}border-primary-500 text-primary-600{% else %}border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300{% endif %}">
+            Activos
+        </a>
+        <a href="?tab=past" class="whitespace-nowrap py-4 px-1 border-b-2 font-medium text-sm transition-colors {% if tab == 'past' %}border-primary-500 text-primary-600{% else %}border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300{% endif %}">
+            Pasados
+        </a>
+        <a href="?tab=cancelled" class="whitespace-nowrap py-4 px-1 border-b-2 font-medium text-sm transition-colors {% if tab == 'cancelled' %}border-primary-500 text-primary-600{% else %}border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300{% endif %}">
+            Cancelados
+        </a>
+    </nav>
 </div>
 
 {% if trips %}
-<div class="trip-grid">
+<div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 fade-in-up" style="animation-delay: 0.2s;">
     {% for trip in trips %}
-    <a href="{% url 'trips:detail' trip.pk %}" class="trip-card-link">
-        <div class="trip-card-item">
-            <div class="trip-card-header">
-                <span class="trip-route">{{ trip.origin }} → {{ trip.destination }}</span>
-                <span class="trip-price">${{ trip.price_per_seat }}</span>
+    <a href="{% url 'trips:detail' trip.pk %}" class="group block h-full">
+        <div class="bg-white rounded-2xl shadow-sm border border-gray-200 hover:shadow-lg hover:border-primary-200 transition-all duration-300 flex flex-col h-full overflow-hidden">
+            <div class="p-5 border-b border-gray-100 flex-grow relative">
+                <!-- Status Badge -->
+                <div class="absolute top-4 right-4">
+                    {% if trip.status == 'active' %}
+                        <span class="bg-green-100 text-green-700 text-xs font-bold px-2.5 py-1 rounded-full border border-green-200">Activo</span>
+                    {% elif trip.status == 'cancelled' %}
+                        <span class="bg-red-100 text-red-700 text-xs font-bold px-2.5 py-1 rounded-full border border-red-200">Cancelado</span>
+                    {% else %}
+                        <span class="bg-gray-100 text-gray-600 text-xs font-bold px-2.5 py-1 rounded-full border border-gray-200">Pasado</span>
+                    {% endif %}
+                </div>
+
+                <div class="flex justify-between items-start mb-4 pr-16">
+                    <div>
+                        <div class="flex items-center gap-2 text-lg font-bold text-gray-900">
+                            {{ trip.origin }}
+                            <i class="fas fa-arrow-right text-gray-400 text-sm"></i>
+                            {{ trip.destination }}
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="space-y-2 text-sm text-gray-600">
+                    <div class="flex items-center gap-2">
+                        <i class="far fa-calendar-alt w-4 text-center"></i>
+                        <span class="font-medium text-gray-800">{{ trip.departure_datetime|date:"d M Y, H:i" }}</span>
+                    </div>
+                    <div class="flex items-center gap-2">
+                        <i class="far fa-clock w-4 text-center"></i>
+                        {{ trip.duration_minutes }} min <span class="text-gray-300 mx-1">|</span> <i class="fas fa-route w-3 text-xs"></i> {{ trip.distance_km }} km
+                    </div>
+                </div>
             </div>
-            <div class="trip-card-body">
-                <div class="trip-card-info">
-                    <span class="trip-info-item">
-                        📅 {{ trip.departure_datetime|date:"d/m/Y H:i" }}
-                    </span>
-                    <span class="trip-info-item">
-                        ⏱ {{ trip.duration_minutes }} min · 📍 {{ trip.distance_km }} km
+            
+            <div class="p-4 bg-gray-50 flex items-center justify-between mt-auto group-hover:bg-primary-50 transition-colors">
+                <div class="flex items-center gap-2">
+                    <i class="fas fa-users text-gray-400 group-hover:text-primary-500 transition-colors"></i>
+                    <span class="text-sm font-medium text-gray-700">
+                        {{ trip.reserved_seats }}/{{ trip.vehicle.capacity }} ocupados
                     </span>
                 </div>
-                <div class="trip-card-meta">
-                    <span class="trip-seats">{{ trip.reserved_seats }}/{{ trip.vehicle.capacity }} asientos · {{ trip.get_status_display }}</span>
+                <div class="text-right">
+                    <p class="text-lg font-bold text-primary-600 leading-tight">${{ trip.price_per_seat }}</p>
                 </div>
             </div>
         </div>
@@ -41,25 +84,36 @@
 </div>
 
 {% if page_obj.has_other_pages %}
-<nav class="pagination" aria-label="Paginación">
-    {% if page_obj.has_previous %}
-        <a href="?tab={{ tab }}&page={{ page_obj.previous_page_number }}" class="page-link">&laquo; Anterior</a>
-    {% endif %}
-
-    {% for num in page_obj.paginator.page_range %}
-        {% if num >= page_obj.number|add:-2 and num <= page_obj.number|add:2 %}
-            <a href="?tab={{ tab }}&page={{ num }}"
-               class="page-link {% if num == page_obj.number %}active{% endif %}">{{ num }}</a>
+<nav class="flex justify-center mt-10" aria-label="Paginación">
+    <div class="inline-flex rounded-md shadow-sm">
+        {% if page_obj.has_previous %}
+            <a href="?tab={{ tab }}&page={{ page_obj.previous_page_number }}" class="px-4 py-2 text-sm font-medium text-gray-500 bg-white border border-gray-300 rounded-l-lg hover:bg-gray-50">Anterior</a>
+        {% else %}
+            <span class="px-4 py-2 text-sm font-medium text-gray-300 bg-gray-50 border border-gray-300 rounded-l-lg cursor-not-allowed">Anterior</span>
         {% endif %}
-    {% endfor %}
 
-    {% if page_obj.has_next %}
-        <a href="?tab={{ tab }}&page={{ page_obj.next_page_number }}" class="page-link">Siguiente &raquo;</a>
-    {% endif %}
+        {% for num in page_obj.paginator.page_range %}
+            {% if num >= page_obj.number|add:-2 and num <= page_obj.number|add:2 %}
+                <a href="?tab={{ tab }}&page={{ num }}" class="px-4 py-2 text-sm font-medium border {% if num == page_obj.number %}bg-primary-50 text-primary-600 border-primary-500 z-10{% else %}bg-white text-gray-500 border-gray-300 hover:bg-gray-50{% endif %}">{{ num }}</a>
+            {% endif %}
+        {% endfor %}
+
+        {% if page_obj.has_next %}
+            <a href="?tab={{ tab }}&page={{ page_obj.next_page_number }}" class="px-4 py-2 text-sm font-medium text-gray-500 bg-white border border-gray-300 rounded-r-lg hover:bg-gray-50">Siguiente</a>
+        {% else %}
+            <span class="px-4 py-2 text-sm font-medium text-gray-300 bg-gray-50 border border-gray-300 rounded-r-lg cursor-not-allowed">Siguiente</span>
+        {% endif %}
+    </div>
 </nav>
 {% endif %}
 
 {% else %}
-<p class="empty-state">No tienes viajes en esta sección.</p>
+<div class="text-center py-16 bg-white rounded-2xl shadow-sm border border-gray-100 fade-in-up">
+    <div class="inline-flex items-center justify-center w-16 h-16 rounded-full bg-primary-50 mb-4">
+        <i class="fas fa-route text-2xl text-primary-500"></i>
+    </div>
+    <h3 class="text-lg font-medium text-gray-900 mb-1">No hay viajes en esta sección</h3>
+    <p class="text-gray-500">Actualmente no tienes viajes {% if tab == 'active' %}activos{% elif tab == 'past' %}pasados{% else %}cancelados{% endif %}.</p>
+</div>
 {% endif %}
 {% endblock %}

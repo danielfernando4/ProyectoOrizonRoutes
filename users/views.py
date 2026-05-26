@@ -50,43 +50,24 @@ class ProfileView(LoginRequiredMixin, TemplateView):
     template_name = "users/profile.html"
 
 
-class CustomPasswordResetView(PasswordResetView):
+from django.contrib import messages
+from django.views.generic.edit import FormView
+from .forms import UserRegistrationForm, DirectPasswordResetForm
+
+class DirectPasswordResetView(FormView):
     template_name = "users/password_reset_form.html"
-    success_url = reverse_lazy("users:password_reset_done")
+    form_class = DirectPasswordResetForm
+    success_url = reverse_lazy("users:login")
 
     def form_valid(self, form):
         email = form.cleaned_data["email"]
-        users = list(form.get_users(email))
-        if users:
-            user = users[0]
-            uid = urlsafe_base64_encode(force_bytes(user.pk))
-            token = default_token_generator.make_token(user)
-            self.reset_url = self.request.build_absolute_uri(
-                reverse("users:password_reset_confirm", kwargs={
-                    "uidb64": uid,
-                    "token": token,
-                })
-            )
-        else:
-            self.reset_url = None
+        username = form.cleaned_data["username"]
+        new_password = form.cleaned_data["new_password"]
+        
+        # Encontramos al usuario (el form.clean() ya validó que existe)
+        user = User.objects.get(email=email, username=username)
+        user.set_password(new_password)
+        user.save()
+        
+        messages.success(self.request, "Tu contraseña ha sido restablecida exitosamente. Ahora puedes iniciar sesión.")
         return super().form_valid(form)
-
-    def get_success_url(self):
-        url = super().get_success_url()
-        if hasattr(self, "reset_url") and self.reset_url:
-            cookie = urlencode({"url": self.reset_url})
-            return f"{url}?reset_url={cookie}"
-        return url
-
-
-class CustomPasswordResetDoneView(PasswordResetDoneView):
-    template_name = "users/password_reset_done.html"
-
-    def get_context_data(self, **kwargs):
-        from urllib.parse import parse_qs
-        context = super().get_context_data(**kwargs)
-        query = self.request.GET.get("reset_url", "")
-        if query:
-            parsed = parse_qs(query)
-            context["reset_url"] = parsed.get("url", [None])[0]
-        return context

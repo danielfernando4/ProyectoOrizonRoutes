@@ -4,70 +4,116 @@
 {% block title %}Buscar Viajes — Orizon Routes{% endblock %}
 
 {% block content %}
-<h1>Viajes Disponibles</h1>
+<div class="mb-8 fade-in-up">
+    <h1 class="text-3xl font-bold text-gray-900 mb-6">Encuentra tu próximo viaje</h1>
 
-<datalist id="origin-list">
-    {% for city in CIUDADES_LIST %}
-    <option value="{{ city }}">
-    {% endfor %}
-</datalist>
-<datalist id="dest-list">
-    {% for city in CIUDADES_LIST %}
-    <option value="{{ city }}">
-    {% endfor %}
-</datalist>
+    <datalist id="origin-list">
+        {% for city in CIUDADES_LIST %}
+        <option value="{{ city }}">
+        {% endfor %}
+    </datalist>
+    <datalist id="dest-list">
+        {% for city in CIUDADES_LIST %}
+        <option value="{{ city }}">
+        {% endfor %}
+    </datalist>
 
-<form method="get" class="search-form">
-    <div class="search-fields">
-        <div class="search-field">
-            <label for="id_origin">Origen</label>
-            {{ form.origin }}
-        </div>
-        <div class="search-field">
-            <label for="id_destination">Destino</label>
-            {{ form.destination }}
-        </div>
-        <div class="search-field">
-            <label for="id_ordering">Ordenar</label>
-            {{ form.ordering }}
-        </div>
+    <div class="bg-white rounded-2xl shadow-md border border-gray-100 p-6">
+        <form method="get" class="space-y-4">
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+                <div>
+                    <label for="id_origin" class="block text-sm font-medium text-gray-700 mb-1">Origen</label>
+                    <div class="relative">
+                        <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+                            <i class="fas fa-map-marker-alt text-gray-400"></i>
+                        </div>
+                        <input type="text" name="origin" value="{{ form.origin.value|default:'' }}" list="origin-list" class="block w-full pl-10 pr-3 py-2 border border-gray-300 rounded-lg focus:ring-primary-500 focus:border-primary-500 transition-colors" placeholder="¿De dónde sales?">
+                    </div>
+                </div>
+                <div>
+                    <label for="id_destination" class="block text-sm font-medium text-gray-700 mb-1">Destino</label>
+                    <div class="relative">
+                        <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+                            <i class="fas fa-map-pin text-gray-400"></i>
+                        </div>
+                        <input type="text" name="destination" value="{{ form.destination.value|default:'' }}" list="dest-list" class="block w-full pl-10 pr-3 py-2 border border-gray-300 rounded-lg focus:ring-primary-500 focus:border-primary-500 transition-colors" placeholder="¿A dónde vas?">
+                    </div>
+                </div>
+                <div>
+                    <label for="id_ordering" class="block text-sm font-medium text-gray-700 mb-1">Ordenar por</label>
+                    <div class="relative">
+                        <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+                            <i class="fas fa-sort text-gray-400 z-10"></i>
+                        </div>
+                        {{ form.ordering }}
+                    </div>
+                </div>
+            </div>
+            <div class="flex items-center gap-3 pt-2">
+                <button type="submit" class="bg-primary-600 hover:bg-primary-700 text-white font-medium py-2 px-6 rounded-lg transition-colors shadow-sm flex items-center gap-2">
+                    <i class="fas fa-search"></i> Buscar
+                </button>
+                {% if has_filters %}
+                <a href="{% url 'trips:search' %}" class="bg-white border border-gray-300 hover:bg-gray-50 text-gray-700 font-medium py-2 px-6 rounded-lg transition-colors shadow-sm">
+                    Limpiar
+                </a>
+                {% endif %}
+            </div>
+        </form>
     </div>
-    <button type="submit" class="btn btn-primary mt-2">Filtrar</button>
-    {% if has_filters %}
-    <a href="{% url 'trips:search' %}" class="btn btn-secondary mt-2">Limpiar filtros</a>
-    {% endif %}
-</form>
+</div>
 
 {% if trips %}
-<p class="results-info mt-2">
-    {{ total_results }} viaje(s)
-    {% if origin_filter %}desde <strong>{{ origin_filter }}</strong>{% endif %}
-    {% if destination_filter %}hacia <strong>{{ destination_filter }}</strong>{% endif %}
-    · ordenados por
-    {% if current_ordering == 'price_per_seat' %}precio (menor a mayor)
-    {% elif current_ordering == '-price_per_seat' %}precio (mayor a menor)
-    {% elif current_ordering == 'distance_km' %}distancia
-    {% elif current_ordering == 'departure_datetime' %}fecha más próxima
-    {% else %}fecha más reciente{% endif %}
-</p>
+<div class="flex items-center justify-between mb-4 fade-in-up" style="animation-delay: 0.1s;">
+    <p class="text-sm text-gray-600 font-medium">
+        {{ total_results }} viaje(s) encontrados
+        {% if origin_filter %}desde <span class="text-gray-900 font-semibold">{{ origin_filter }}</span>{% endif %}
+        {% if destination_filter %}hacia <span class="text-gray-900 font-semibold">{{ destination_filter }}</span>{% endif %}
+    </p>
+</div>
 
-<div class="trip-grid">
+<div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 fade-in-up" style="animation-delay: 0.2s;">
     {% for trip in trips %}
-    <a href="{% url 'trips:detail' trip.pk %}" class="trip-card-link">
-        <div class="trip-card-item">
-            <div class="trip-card-header">
-                <span class="trip-route">{{ trip.origin }} → {{ trip.destination }}</span>
-                <span class="trip-price">${{ trip.price_per_seat }}</span>
-            </div>
-            <div class="trip-card-body">
-                <div class="trip-card-info">
-                    <span class="trip-info-item">📅 {{ trip.departure_datetime|date:"d/m/Y H:i" }}</span>
-                    <span class="trip-info-item">⏱ {{ trip.duration_minutes }} min</span>
-                    <span class="trip-info-item">📍 {{ trip.distance_km }} km</span>
+    <a href="{% url 'trips:detail' trip.pk %}" class="group block h-full">
+        <div class="bg-white rounded-2xl shadow-sm border border-gray-200 hover:shadow-lg hover:border-primary-200 transition-all duration-300 flex flex-col h-full overflow-hidden">
+            <div class="p-5 border-b border-gray-100 flex-grow">
+                <div class="flex justify-between items-start mb-4">
+                    <div>
+                        <div class="flex items-center gap-2 text-lg font-bold text-gray-900">
+                            {{ trip.origin }}
+                            <i class="fas fa-arrow-right text-gray-400 text-sm"></i>
+                            {{ trip.destination }}
+                        </div>
+                    </div>
+                    <div class="text-right">
+                        <span class="text-2xl font-bold text-primary-600">${{ trip.price_per_seat }}</span>
+                    </div>
                 </div>
-                <div class="trip-card-meta">
-                    <span class="trip-seats">{{ trip.available_seats }} de {{ trip.vehicle.capacity }} asientos libres</span>
-                    <span class="trip-driver">{{ trip.driver.get_full_name|default:trip.driver.username }}</span>
+                
+                <div class="space-y-2 text-sm text-gray-600">
+                    <div class="flex items-center gap-2">
+                        <i class="far fa-calendar-alt w-4 text-center"></i>
+                        {{ trip.departure_datetime|date:"d M Y, H:i" }}
+                    </div>
+                    <div class="flex items-center gap-2">
+                        <i class="far fa-clock w-4 text-center"></i>
+                        {{ trip.duration_minutes }} min <span class="text-gray-300 mx-1">|</span> <i class="fas fa-route w-3 text-xs"></i> {{ trip.distance_km }} km
+                    </div>
+                </div>
+            </div>
+            
+            <div class="p-4 bg-gray-50 flex items-center justify-between mt-auto group-hover:bg-primary-50 transition-colors">
+                <div class="flex items-center gap-3">
+                    <div class="w-8 h-8 rounded-full bg-primary-200 flex items-center justify-center text-primary-700 font-bold text-sm">
+                        {{ trip.driver.get_full_name|default:trip.driver.username|make_list|first|upper }}
+                    </div>
+                    <span class="font-medium text-gray-700 text-sm truncate max-w-[120px] group-hover:text-primary-700 transition-colors">
+                        {{ trip.driver.get_full_name|default:trip.driver.username }}
+                    </span>
+                </div>
+                <div class="flex items-center gap-1.5 text-sm font-medium {% if trip.available_seats > 0 %}text-green-600{% else %}text-red-500{% endif %} bg-white px-2 py-1 rounded-md border border-gray-200 group-hover:border-primary-100">
+                    <i class="fas fa-chair text-xs"></i>
+                    {{ trip.available_seats }} libres
                 </div>
             </div>
         </div>
@@ -76,27 +122,63 @@
 </div>
 
 {% if page_obj.has_other_pages %}
-<nav class="pagination" aria-label="Paginación">
-    {% if page_obj.has_previous %}
-        <a href="?{% for key, values in request.GET.lists %}{% if key != 'page' %}{% for v in values %}{{ key }}={{ v }}&{% endfor %}{% endif %}{% endfor %}page={{ page_obj.previous_page_number }}" class="page-link">&laquo;</a>
-    {% endif %}
-
-    {% for num in page_obj.paginator.page_range %}
-        {% if num >= page_obj.number|add:-2 and num <= page_obj.number|add:2 %}
-            <a href="?{% for key, values in request.GET.lists %}{% if key != 'page' %}{% for v in values %}{{ key }}={{ v }}&{% endfor %}{% endif %}{% endfor %}page={{ num }}"
-               class="page-link {% if num == page_obj.number %}active{% endif %}">{{ num }}</a>
+<nav class="flex justify-center mt-10" aria-label="Paginación">
+    <div class="inline-flex rounded-md shadow-sm">
+        {% if page_obj.has_previous %}
+            <a href="?{% for key, values in request.GET.lists %}{% if key != 'page' %}{% for v in values %}{{ key }}={{ v }}&{% endfor %}{% endif %}{% endfor %}page={{ page_obj.previous_page_number }}" class="px-4 py-2 text-sm font-medium text-gray-500 bg-white border border-gray-300 rounded-l-lg hover:bg-gray-50">
+                Anterior
+            </a>
+        {% else %}
+            <span class="px-4 py-2 text-sm font-medium text-gray-300 bg-gray-50 border border-gray-300 rounded-l-lg cursor-not-allowed">Anterior</span>
         {% endif %}
-    {% endfor %}
 
-    {% if page_obj.has_next %}
-        <a href="?{% for key, values in request.GET.lists %}{% if key != 'page' %}{% for v in values %}{{ key }}={{ v }}&{% endfor %}{% endif %}{% endfor %}page={{ page_obj.next_page_number }}" class="page-link">&raquo;</a>
-    {% endif %}
+        {% for num in page_obj.paginator.page_range %}
+            {% if num >= page_obj.number|add:-2 and num <= page_obj.number|add:2 %}
+                <a href="?{% for key, values in request.GET.lists %}{% if key != 'page' %}{% for v in values %}{{ key }}={{ v }}&{% endfor %}{% endif %}{% endfor %}page={{ num }}"
+                   class="px-4 py-2 text-sm font-medium border {% if num == page_obj.number %}bg-primary-50 text-primary-600 border-primary-500 z-10{% else %}bg-white text-gray-500 border-gray-300 hover:bg-gray-50{% endif %}">
+                    {{ num }}
+                </a>
+            {% endif %}
+        {% endfor %}
+
+        {% if page_obj.has_next %}
+            <a href="?{% for key, values in request.GET.lists %}{% if key != 'page' %}{% for v in values %}{{ key }}={{ v }}&{% endfor %}{% endif %}{% endfor %}page={{ page_obj.next_page_number }}" class="px-4 py-2 text-sm font-medium text-gray-500 bg-white border border-gray-300 rounded-r-lg hover:bg-gray-50">
+                Siguiente
+            </a>
+        {% else %}
+            <span class="px-4 py-2 text-sm font-medium text-gray-300 bg-gray-50 border border-gray-300 rounded-r-lg cursor-not-allowed">Siguiente</span>
+        {% endif %}
+    </div>
 </nav>
 {% endif %}
 
 {% elif has_filters %}
-<p class="empty-state">No se encontraron viajes con estos filtros.</p>
+<div class="text-center py-16 bg-white rounded-2xl shadow-sm border border-gray-100 fade-in-up">
+    <div class="inline-flex items-center justify-center w-16 h-16 rounded-full bg-gray-100 mb-4">
+        <i class="fas fa-search text-2xl text-gray-400"></i>
+    </div>
+    <h3 class="text-lg font-medium text-gray-900 mb-1">Sin resultados</h3>
+    <p class="text-gray-500">No se encontraron viajes con estos filtros. Intenta con otra búsqueda.</p>
+</div>
 {% else %}
-<p class="empty-state">No hay viajes disponibles en este momento. ¡Vuelve pronto!</p>
+<div class="text-center py-16 bg-white rounded-2xl shadow-sm border border-gray-100 fade-in-up">
+    <div class="inline-flex items-center justify-center w-16 h-16 rounded-full bg-primary-50 mb-4">
+        <i class="fas fa-car-side text-2xl text-primary-500"></i>
+    </div>
+    <h3 class="text-lg font-medium text-gray-900 mb-1">Aún no hay viajes</h3>
+    <p class="text-gray-500">No hay viajes disponibles en este momento. ¡Vuelve pronto!</p>
+</div>
 {% endif %}
+{% endblock %}
+
+{% block scripts %}
+<script>
+    // Aplicar estilos modernos a los selects del formulario de Django
+    document.addEventListener('DOMContentLoaded', function() {
+        const selects = document.querySelectorAll('select');
+        selects.forEach(function(select) {
+            select.className = 'block w-full pl-10 pr-8 py-2 border border-gray-300 rounded-lg focus:ring-primary-500 focus:border-primary-500 custom-select bg-white text-gray-700';
+        });
+    });
+</script>
 {% endblock %}

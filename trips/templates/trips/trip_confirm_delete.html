@@ -3,13 +3,27 @@
 {% block title %}Eliminar Viaje — Orizon Routes{% endblock %}
 
 {% block content %}
-<h1>Eliminar Viaje</h1>
+<div class="max-w-lg mx-auto fade-in-up">
+    <div class="bg-white rounded-2xl shadow-lg border border-gray-100 overflow-hidden">
+        <div class="bg-gradient-to-br from-red-500 to-red-600 px-8 py-8 text-center">
+            <div class="w-16 h-16 bg-white/20 backdrop-blur-sm rounded-2xl flex items-center justify-center mx-auto mb-4">
+                <i class="fas fa-trash-alt text-2xl text-white"></i>
+            </div>
+            <h1 class="text-2xl font-bold text-white">Eliminar Viaje</h1>
+        </div>
+        <div class="p-8 text-center">
+            <p class="text-gray-600 mb-2">¿Estás seguro de que deseas eliminar el viaje:</p>
+            <p class="text-lg font-bold text-gray-900 mb-1">{{ object.origin }} → {{ object.destination }}</p>
+            <p class="text-sm text-gray-500 mb-8"><i class="far fa-calendar-alt mr-1"></i>{{ object.departure_datetime|date:"d M Y, H:i" }}</p>
 
-<p>¿Estás seguro de que deseas eliminar el viaje "{{ object.origin }} → {{ object.destination }}" del {{ object.departure_datetime|date:"d/m/Y H:i" }}?</p>
-
-<form method="post">
-    {% csrf_token %}
-    <button type="submit" class="btn btn-danger">Sí, eliminar</button>
-    <a href="{% url 'trips:list' %}" class="btn">Cancelar</a>
-</form>
+            <form method="post" class="flex gap-3 justify-center">
+                {% csrf_token %}
+                <button type="submit" class="bg-red-600 hover:bg-red-700 text-white font-bold py-3 px-8 rounded-xl shadow-lg shadow-red-600/25 hover:shadow-xl transition-all">
+                    <i class="fas fa-trash mr-2"></i>Sí, eliminar
+                </button>
+                <a href="{% url 'trips:list' %}" class="bg-gray-100 hover:bg-gray-200 text-gray-700 font-medium py-3 px-8 rounded-xl transition-colors">Cancelar</a>
+            </form>
+        </div>
+    </div>
+</div>
 {% endblock %}
