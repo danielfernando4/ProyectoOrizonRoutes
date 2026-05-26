@@ -283,6 +283,8 @@ class CreateReservationView(LoginRequiredMixin, View):
                 trip=trip,
                 quantity=quantity,
             )
+
+            """
             paypal = get_paypal_client()
             return_url = request.build_absolute_uri(reverse('trips:capture'))
             cancel_url = request.build_absolute_uri(
@@ -305,6 +307,15 @@ class CreateReservationView(LoginRequiredMixin, View):
                 reservation.delete()
                 messages.error(request, f'Error al procesar el pago. Intenta nuevamente. ({e})')
                 return redirect('trips:detail', pk=trip.pk)
+            """
+
+            # MODO DESARROLLO (sin PayPal)
+
+            reservation.payment_status = 'paid'
+            reservation.save()
+
+            messages.success(request, 'Reserva realizada correctamente.')
+            return redirect('trips:reservation_success', pk=reservation.pk)
 
 
 class CaptureOrderView(LoginRequiredMixin, View):
